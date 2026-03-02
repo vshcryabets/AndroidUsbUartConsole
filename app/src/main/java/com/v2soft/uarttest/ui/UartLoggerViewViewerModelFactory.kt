@@ -3,7 +3,7 @@ package com.v2soft.uarttest.ui
 import android.hardware.usb.UsbManager
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.v2soft.uarttest.domain.UartRepo
+import com.v2soft.uarttest.repo.UartRepo
 
 class UartLoggerViewViewerModelFactory(
     private val usbManager: UsbManager,

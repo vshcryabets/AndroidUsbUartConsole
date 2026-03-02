@@ -1,9 +1,11 @@
-package com.v2soft.uarttest.domain
+package com.v2soft.uarttest.repo
 
 import android.hardware.usb.UsbDevice
 import com.hoho.android.usbserial.driver.UsbSerialDriver
 import com.hoho.android.usbserial.driver.UsbSerialPort
 import com.hoho.android.usbserial.driver.UsbSerialProber
+import com.v2soft.uarttest.domain.ConstructionError
+import com.v2soft.uarttest.domain.Result
 import java.io.Closeable
 
 class UartController(
@@ -23,11 +25,6 @@ class UartController(
         val parity: Int = UsbSerialPort.PARITY_NONE
     )
 
-    sealed class ConstructionError {
-        class NoPermission(val device: UsbDevice) : ConstructionError()
-        class NoDriver(val device: UsbDevice) : ConstructionError()
-        class CantOpen(val device: UsbDevice) : ConstructionError()
-    }
 
     companion object {
         fun construct(device: UsbDevice, configuration: Configuration): Result<UartController> {

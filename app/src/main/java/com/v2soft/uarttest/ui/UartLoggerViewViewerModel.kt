@@ -4,9 +4,10 @@ import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import com.v2soft.uarttest.domain.ConstructionError
 import com.v2soft.uarttest.domain.Result
-import com.v2soft.uarttest.domain.UartController
-import com.v2soft.uarttest.domain.UartRepo
+import com.v2soft.uarttest.repo.UartController
+import com.v2soft.uarttest.repo.UartRepo
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -40,12 +41,14 @@ class UartLoggerViewViewerModel(
         if (result is Result.Error) {
             val error = result.error
             when (error) {
-                is UartController.ConstructionError.NoPermission ->
+                is ConstructionError.NoPermission ->
                     _state.update { it.copy(noPermissionDevice = error.device) }
-                is UartController.ConstructionError.NoDriver ->
+                is ConstructionError.NoDriver ->
                     _state.update { it.copy(noDeviceDriver = "Can't find driver for ${error.device}") }
-                is UartController.ConstructionError.CantOpen ->
+                is ConstructionError.CantOpen ->
                     _state.update { it.copy(noDeviceDriver = "Can't open ${error.device}") }
+                else ->
+                    _state.update { it.copy(noDeviceDriver = "Can't open device") }
             }
         } else if (result is Result.Value) {
             _state.update { it.copy(activePortId = result.value) }
