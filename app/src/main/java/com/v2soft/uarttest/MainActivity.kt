@@ -16,6 +16,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import com.v2soft.uarttest.domain.AddControllerUseCase
 import com.v2soft.uarttest.repo.UartRepo
 import com.v2soft.uarttest.ui.Greeting
 import com.v2soft.uarttest.ui.UartLoggerViewViewerModel
@@ -46,11 +47,11 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         uartRepo = UartRepo(this.getSystemService(USB_SERVICE) as UsbManager)
+        val addControllerUseCase = AddControllerUseCase(uartRepo)
 
         viewModel = ViewModelProvider(
             this, UartLoggerViewViewerModelFactory(
-                usbManager =  this.getSystemService(USB_SERVICE) as UsbManager,
-                uartRepo = uartRepo
+                addControllerUseCase =  addControllerUseCase
             )
         ).get(UartLoggerViewViewerModel::class.java)
 

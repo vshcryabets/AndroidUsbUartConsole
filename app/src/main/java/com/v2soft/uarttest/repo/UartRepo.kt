@@ -19,7 +19,8 @@ class UartRepo(
 
     fun addController(
         device: UsbDevice,
-        configuration: UartController.Configuration): Result<AddControllerResult> {
+        configuration: UartController.Configuration
+    ): Result<AddControllerResult> {
         val id = portIdCounter.incrementAndGet()
         val result = UartController.construct(
             device = device,

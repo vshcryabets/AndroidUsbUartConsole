@@ -1,7 +1,6 @@
 package com.v2soft.uarttest.repo
 
 import android.hardware.usb.UsbDevice
-import android.hardware.usb.UsbDeviceConnection
 import android.hardware.usb.UsbManager
 import android.util.Log
 import com.hoho.android.usbserial.driver.UsbSerialDriver
@@ -20,10 +19,11 @@ class UartController(
     private var serialInputOutputManager: SerialInputOutputManager? = null
 
     data class Configuration(
-        val baudRate: Int = 420000,
+        val baudRate: Int = 115200,
         val dataBits: Int = 8,
         val stopBits: Int = UsbSerialPort.STOPBITS_1,
-        val parity: Int = UsbSerialPort.PARITY_NONE
+        val parity: Int = UsbSerialPort.PARITY_NONE,
+        val maxBuffer: Int = 16*1024,
     )
 
     fun open() {
@@ -37,19 +37,31 @@ class UartController(
     }
 
     override fun onNewData(data: ByteArray?) {
-        Log.d("UartController", "Got data $data")
+        if (data == null) {
+            Log.e(TAG, "onNewData called with null")
+            return
+        }
+        val size = data.size
+        Log.d(TAG, "Got data buffer $size byte(s)")
+        val str = String(data)
+        Log.d(TAG, "Msg = $str")
     }
 
     override fun onRunError(e: java.lang.Exception?) {
-        Log.e("UartController", e?.toString() ?: "null")
+        Log.e(TAG, "onRunError", e)
     }
 
     companion object {
+        const val TAG = "UartController"
         fun construct(
             device: UsbDevice,
             configuration: Configuration,
             manager: UsbManager
         ): Result<UartController> {
+            if (!manager.hasPermission(device)) {
+                return Result.Error(ConstructionError.NoPermission(device))
+            }
+
             val driver = UsbSerialProber
                 .getDefaultProber()
                 .probeDevice(device) ?: return Result.Error(ConstructionError.NoDriver(device))

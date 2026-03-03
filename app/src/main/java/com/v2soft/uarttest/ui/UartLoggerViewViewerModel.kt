@@ -4,6 +4,7 @@ import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import com.v2soft.uarttest.domain.AddControllerUseCase
 import com.v2soft.uarttest.domain.ConstructionError
 import com.v2soft.uarttest.domain.Result
 import com.v2soft.uarttest.repo.UartController
@@ -25,19 +26,15 @@ data class State(
 )
 
 class UartLoggerViewViewerModel(
-    private val usbManager: UsbManager,
-    private val uartRepo: UartRepo
+    private val addControllerUseCase: AddControllerUseCase
 ) : ViewModel() {
     private val _state = MutableStateFlow<State>(State())
     val state: StateFlow<State> = _state
 
     fun onUsbDeviceAttached(device: UsbDevice) {
         Log.d("UartLoggerViewViewerModel", "USB device attached: ${device}")
-        if (!usbManager.hasPermission(device)) {
-            _state.update { it.copy(noPermissionDevice = device) }
-            return
-        }
-        val result = uartRepo.addController(device, state.value.currentConfiguration)
+
+        val result = addControllerUseCase(device, state.value.currentConfiguration)
         if (result is Result.Error) {
             val error = result.error
             when (error) {
