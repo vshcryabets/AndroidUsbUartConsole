@@ -25,7 +25,7 @@ import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     lateinit var viewModel: UartLoggerViewViewerModel
-    private val uartRepo: UartRepo = UartRepo()
+    private lateinit var uartRepo: UartRepo
 
     private val usbReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -44,6 +44,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        uartRepo = UartRepo(this.getSystemService(USB_SERVICE) as UsbManager)
 
         viewModel = ViewModelProvider(
             this, UartLoggerViewViewerModelFactory(

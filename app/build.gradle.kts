@@ -55,5 +55,5 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
-    implementation("com.github.mik3y:usb-serial-for-android:3.10.0")
+    implementation(libs.usb.serial.for1.android)
 }

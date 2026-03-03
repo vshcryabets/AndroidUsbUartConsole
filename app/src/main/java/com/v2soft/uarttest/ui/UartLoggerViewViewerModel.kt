@@ -51,7 +51,9 @@ class UartLoggerViewViewerModel(
                     _state.update { it.copy(noDeviceDriver = "Can't open device") }
             }
         } else if (result is Result.Value) {
-            _state.update { it.copy(activePortId = result.value) }
+            val controller = result.value
+            _state.update { it.copy(activePortId = controller.id) }
+            controller.controller.open()
         }
     }
 

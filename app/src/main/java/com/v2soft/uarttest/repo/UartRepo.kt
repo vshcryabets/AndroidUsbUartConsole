@@ -1,26 +1,39 @@
 package com.v2soft.uarttest.repo
 
 import android.hardware.usb.UsbDevice
+import android.hardware.usb.UsbManager
 import com.v2soft.uarttest.domain.ConstructionError
 import com.v2soft.uarttest.domain.Result
 import java.util.concurrent.atomic.AtomicInteger
 
-class UartRepo {
+class UartRepo(
+    private val usbManager: UsbManager
+) {
+    data class AddControllerResult(
+        val id: Int,
+        val controller: UartController
+    )
     private val portIdCounter = AtomicInteger(1)
 
     private val controllers = mutableMapOf<Int, UartController>()
 
-    fun addController(device: UsbDevice, configuration: UartController.Configuration): Result<Int> {
+    fun addController(
+        device: UsbDevice,
+        configuration: UartController.Configuration): Result<AddControllerResult> {
         val id = portIdCounter.incrementAndGet()
         val result = UartController.construct(
             device = device,
-            configuration = configuration
+            configuration = configuration,
+            manager = usbManager,
         )
         if (result is Result.Error) {
             return Result.Error(result.error)
         } else if (result is Result.Value) {
             controllers[id] = result.value
-            return Result.Value(id)
+            return Result.Value(AddControllerResult(
+                id = id,
+                controller = result.value
+            ))
         }
         return Result.Error(ConstructionError.NoDriver(device))
     }
